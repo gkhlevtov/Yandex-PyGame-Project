@@ -1,7 +1,7 @@
 sequence = '1 2 3 4 5 6 7 8 9 10 11 12 13 14'  # Порядок значений
 
 
-def suit5(suits):  # Проверка на наличие масти, втречающейся 5 раз
+def suit5(suits):  # Проверка на наличие масти, встречающейся 5 раз
     suits = ''.join(sorted(suits))
     if 'HHHHH' in suits:
         return 'H'
@@ -44,13 +44,13 @@ def comb(values, suits):  # Определение комбинации
 
     # Комбинация Каре
     if count_v[0][1] == 4:
-        v4 = count_v[0][0]  # Значение, втречающееся 4 раза
+        v4 = count_v[0][0]  # Значение, встречающееся 4 раза
         # Результат сортируем по id в порядке возрастания
         return 'Каре', sorted(filter(lambda x: x[1] == v4, lst))
 
     # Комбинация Фулл-хаус
     if count_v[0][1] == 3 and count_v[1][1] == 2:
-        v3 = count_v[0][0]  # Значение, втречающееся 3 раза
+        v3 = count_v[0][0]  # Значение, встречающееся 3 раза
         # Определение наибольшего значения, встречающегося 2 раза
         if count_v[2][1] == 2 and count_v[2][0] > count_v[1][0]:
             v2 = count_v[2][0]
@@ -73,7 +73,7 @@ def comb(values, suits):  # Определение комбинации
                 (len(slst) == 7 and (
                         ' '.join(slst)[:5] in sequence or ' '.join(slst)[1:6] in sequence or ' '.join(slst)[
                                                                                              2:] in sequence)):
-            # Временный список, отосортированный по значению в порядке невозрастанияи и по id в порядке возрастания
+            # Временный список, отсортированный по значению в порядке невозрастания и по id в порядке возрастания
             tlst = sorted(lst, key=lambda x: (-x[1], x[0]))
             res = []
             for i in range(len(tlst) - 1):
@@ -140,12 +140,19 @@ def best_comb(name, comb1, comb2):  # Определение лучшей ком
         return False
 
 
-n, c1 = comb(list(map(int, input().split())), input().split())
-c2 = comb(list(map(int, input().split())), input().split())[1]
-print(best_comb(n, c1, c2))
+if __name__ == '__main__':
+    n, c1 = comb(list(map(int, input().split())), input().split())
 
-''' Два Стрит-флеша
+    # c2 = comb(list(map(int, input().split())), input().split())[1]
+    # print(best_comb(n, c1, c2))
+
+    print(n)
+    print(c1)
+
+'''
+Два Стрит-флеша
 1 2 3 4 5 6 7
 H H H H H H H
 3 4 5 6 7 8 9
-D D D D D D D'''
+D D D D D D D
+'''
