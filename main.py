@@ -303,6 +303,9 @@ def main():
     table_zone = 0
     draw_border = False
 
+    print('')
+    print('=' * 100)
+
     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
     draw_cards(screen=screen, sprite_group=all_sprites, images=images,
