@@ -125,9 +125,9 @@ def draw_cards(screen, sprite_group, images, screen_size, game_set, player_set1,
     left_card1_pos = center_card_pos[0] + 18 * w_percent, center_card_pos[1]
     left_card2_pos = center_card_pos[0] + 36 * w_percent, center_card_pos[1]
 
-    positons = [right_card1_pos, right_card2_pos, center_card_pos, left_card1_pos, left_card2_pos]
+    positions = [right_card1_pos, right_card2_pos, center_card_pos, left_card1_pos, left_card2_pos]
     for i in range(5):
-        Card(sprite_group, path=images[0][i], position=positons[i], card_size=card_size,
+        Card(sprite_group, path=images[0][i], position=positions[i], card_size=card_size,
              value=values[i], suit=suits[i], screen=screen)
 
     player_set_y = center[1] + 15 * h_percent
@@ -252,7 +252,8 @@ def get_best_combination(game_set, player_set1, player_set2):
     comb1 = best_combination.comb(*full_set1)
     comb2 = best_combination.comb(*full_set2)
 
-    print(comb1, comb2, sep='\n')
+    print(*comb1, sep='\t')
+    print(*comb2, sep='\t', end='\n\n')
 
     best = best_combination.best_comb(*comb1, *comb2)
     if best == '1':
@@ -264,8 +265,6 @@ def get_best_combination(game_set, player_set1, player_set2):
     else:
         win_comb = (comb1[0], comb1[1] + comb2[1])
         print('Ничья')
-
-    print(win_comb)
 
     return win_comb, best
 
@@ -331,7 +330,6 @@ def main():
                 table_zone = get_screen_zone(click_pos, sets_pos)
 
                 if focused and table_zone != 0 and current_zone == table_zone:
-                    print(best_set, table_zone)
                     if best_set == 'draw':
                         current_score += 1
                     elif (best_set == '1' and table_zone == 1) or (best_set == '0' and table_zone == 2):
@@ -340,7 +338,8 @@ def main():
                     all_sprites = pygame.sprite.Group()
                     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
-                    print('======================================================================================')
+                    print(f'Текущие очки: {current_score}', end='\n\n')
+                    print('=' * 100)
 
                     win_comb = get_best_combination(game_set, player_set1, player_set2)
                     best_set = win_comb[1]
@@ -380,6 +379,7 @@ def main():
         clock.tick(fps)
         pygame.display.flip()
 
+    print(f'Итоговый счёт: {current_score}')
     pygame.quit()
     sys.exit()
 
