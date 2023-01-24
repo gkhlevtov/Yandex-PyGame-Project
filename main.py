@@ -257,17 +257,17 @@ def get_best_combination(game_set, player_set1, player_set2):
     best = best_combination.best_comb(*comb1, *comb2)
     if best == '1':
         win_comb = comb1
-        print('Первая')
+        print('Первая выигрышная')
     elif best == '0':
         win_comb = comb2
-        print('Вторая')
+        print('Вторая выигрышная')
     else:
         win_comb = (comb1[0], comb1[1] + comb2[1])
         print('Ничья')
 
     print(win_comb)
 
-    return win_comb
+    return win_comb, best
 
 
 def main():
@@ -311,7 +311,8 @@ def main():
                game_set=game_set, player_set1=player_set1, player_set2=player_set2)
 
     win_comb = get_best_combination(game_set, player_set1, player_set2)
-    show_combination(win_comb[0], screen_size=size, screen=screen)
+    best_set = win_comb[1]
+    show_combination(win_comb[0][0], screen_size=size, screen=screen)
     show_score(current_score, screen_size=size, screen=screen)
 
     while running:
@@ -330,10 +331,27 @@ def main():
                 table_zone = get_screen_zone(click_pos, sets_pos)
 
                 if focused and table_zone != 0 and current_zone == table_zone:
+                    print(best_set, table_zone)
+                    if best_set == 'draw':
+                        current_score += 1
+                    elif (best_set == '1' and table_zone == 1) or (best_set == '0' and table_zone == 2):
+                        current_score += 1
 
-                    # ! Происходит смена наборов
+                    all_sprites = pygame.sprite.Group()
+                    game_set, player_set1, player_set2, images = update_sets(full_deck)
 
+                    print('======================================================================================')
+
+                    win_comb = get_best_combination(game_set, player_set1, player_set2)
+                    best_set = win_comb[1]
+
+                    draw_cards(screen=screen, sprite_group=all_sprites, images=images,
+                               screen_size=size, card_size=card_size,
+                               game_set=game_set, player_set1=player_set1, player_set2=player_set2)
+
+                    focused = False
                     draw_border = False
+
                 elif focused and table_zone == 0:
                     focused = False
                     draw_border = False
@@ -343,28 +361,14 @@ def main():
 
                 current_zone = table_zone
 
-                # current_score += 1
-
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    all_sprites = pygame.sprite.Group()
-                    game_set, player_set1, player_set2, images = update_sets(full_deck)
-
-                    print('======================================================================================')
-
-                    win_comb = get_best_combination(game_set, player_set1, player_set2)
-
-                    draw_cards(screen=screen, sprite_group=all_sprites, images=images,
-                               screen_size=size, card_size=card_size,
-                               game_set=game_set, player_set1=player_set1, player_set2=player_set2)
-
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
         screen.blit(scaled_background, (0, 0))
         all_sprites.draw(screen)
-        all_sprites.update(win_comb)
-        show_combination(win_comb[0], screen_size=size, screen=screen)
+        all_sprites.update(win_comb[0])
+        show_combination(win_comb[0][0], screen_size=size, screen=screen)
         show_score(current_score, screen_size=size, screen=screen)
 
         if draw_border:
@@ -372,6 +376,7 @@ def main():
 
         if use_custom_cursor:
             screen.blit(cursor_img, cursor_img_rect)
+
         clock.tick(fps)
         pygame.display.flip()
 
