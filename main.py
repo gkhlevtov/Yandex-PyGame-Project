@@ -39,6 +39,7 @@ class Card(pygame.sprite.Sprite):
         self.screen = screen
 
     def update(self, best_comb):
+        """Отрисовка рамок у карт в комбинации, а также кикеров."""
         for card in best_comb[1]:
             value, suit = card[1], card[2]
             if self.value == value and self.suit == suit:
@@ -55,6 +56,7 @@ def load_image(filename, color_key=None):
     """Функция загрузки изображения в pygame."""
 
     fullname = os.path.join('images', filename)
+
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -123,16 +125,10 @@ def draw_cards(screen, sprite_group, images, screen_size, game_set, player_set1,
     left_card1_pos = center_card_pos[0] + 18 * w_percent, center_card_pos[1]
     left_card2_pos = center_card_pos[0] + 36 * w_percent, center_card_pos[1]
 
-    Card(sprite_group, path=images[0][0], position=right_card1_pos, card_size=card_size,
-         value=values[0], suit=suits[0], screen=screen)
-    Card(sprite_group, path=images[0][1], position=right_card2_pos, card_size=card_size,
-         value=values[1], suit=suits[1], screen=screen)
-    Card(sprite_group, path=images[0][2], position=center_card_pos, card_size=card_size,
-         value=values[2], suit=suits[2], screen=screen)
-    Card(sprite_group, path=images[0][3], position=left_card1_pos, card_size=card_size,
-         value=values[3], suit=suits[3], screen=screen)
-    Card(sprite_group, path=images[0][4], position=left_card2_pos, card_size=card_size,
-         value=values[4], suit=suits[4], screen=screen)
+    positons = [right_card1_pos, right_card2_pos, center_card_pos, left_card1_pos, left_card2_pos]
+    for i in range(5):
+        Card(sprite_group, path=images[0][i], position=positons[i], card_size=card_size,
+             value=values[i], suit=suits[i], screen=screen)
 
     player_set_y = center[1] + 15 * h_percent
     set1_x = center[0] - 38 * w_percent
@@ -212,15 +208,15 @@ def get_sets_positions(screen_size, card_size):
 
 def get_screen_zone(pos, sets_pos):
     """Функция определения нахождения курсора в игровых зонах."""
-    zone = 0  # стол
+    zone = 0  # зона стола
     x, y = pos[0], pos[1]
 
     set1_up_pos, set1_down_pos, set2_up_pos, set2_down_pos = sets_pos
 
     if (set1_up_pos[0] <= x <= set1_down_pos[0]) and (set1_up_pos[1] <= y <= set1_down_pos[1]):
-        zone = 1  # 1 набор
+        zone = 1  # зона 1-ого набора
     elif (set2_up_pos[0] <= x <= set2_down_pos[0]) and (set2_up_pos[1] <= y <= set2_down_pos[1]):
-        zone = 2  # 2 набор
+        zone = 2  # зона 2-ого набора
     return zone
 
 
@@ -305,8 +301,8 @@ def main():
 
     focused = False
     current_score = 0
-    zone = 0
-    draw = False
+    table_zone = 0
+    draw_border = False
 
     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
@@ -331,20 +327,21 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click_pos = pygame.mouse.get_pos()
-                zone = get_screen_zone(click_pos, sets_pos)
+                table_zone = get_screen_zone(click_pos, sets_pos)
 
-                if focused and zone != 0 and current_zone == zone:
+                if focused and table_zone != 0 and current_zone == table_zone:
 
                     # ! Происходит смена наборов
-                    draw = False
-                elif focused and zone == 0:
-                    focused = False
-                    draw = False
-                elif zone != 0:
-                    focused = True
-                    draw = True
 
-                current_zone = zone
+                    draw_border = False
+                elif focused and table_zone == 0:
+                    focused = False
+                    draw_border = False
+                elif table_zone != 0:
+                    focused = True
+                    draw_border = True
+
+                current_zone = table_zone
 
                 # current_score += 1
 
@@ -370,8 +367,8 @@ def main():
         show_combination(win_comb[0], screen_size=size, screen=screen)
         show_score(current_score, screen_size=size, screen=screen)
 
-        if draw:
-            draw_zone_border(zone, sets_pos, screen_size=size, card_size=card_size, screen=screen)
+        if draw_border:
+            draw_zone_border(table_zone, sets_pos, screen_size=size, card_size=card_size, screen=screen)
 
         if use_custom_cursor:
             screen.blit(cursor_img, cursor_img_rect)
