@@ -51,6 +51,18 @@ class Card(pygame.sprite.Sprite):
                 pygame.draw.rect(self.screen, (255, 0, 0), stroke_pos, size_percent * 5)
                 break
 
+        if best_comb[2]:
+            for card in best_comb[2]:
+                value, suit = card[1], card[2]
+                if self.value == value and self.suit == suit:
+                    size_percent = self.size[0] // 100
+                    stroke_pos = (self.rect.x - size_percent * 10,
+                                  self.rect.y - size_percent * 10,
+                                  self.size[0] + size_percent * 20,
+                                  self.size[1] + size_percent * 20)
+                    pygame.draw.rect(self.screen, (0, 0, 0), stroke_pos, size_percent * 5)
+                    break
+
 
 def load_image(filename, color_key=None):
     """Функция загрузки изображения в pygame."""
@@ -226,6 +238,7 @@ def draw_zone_border(zone, sets_pos, screen_size, card_size, screen):
         screen_width, screen_height = screen_size
         w_percent, h_percent = screen_width // 100, screen_height // 100
         card_width, card_height = card_size
+        size_percent = card_width // 100
         indent = card_width + 6 * w_percent
 
         set1_up_pos, set1_down_pos, set2_up_pos, set2_down_pos = sets_pos
@@ -234,12 +247,34 @@ def draw_zone_border(zone, sets_pos, screen_size, card_size, screen):
             pygame.draw.rect(screen, (255, 255, 255),
                              (set1_up_pos[0], set1_up_pos[1],
                               card_width + indent + 6 * w_percent, card_height + 6 * h_percent),
-                             10)
+                             size_percent * 5)
         else:
             pygame.draw.rect(screen, (255, 255, 255),
                              (set2_up_pos[0], set2_up_pos[1],
                               card_width + indent + 6 * w_percent, card_height + 6 * h_percent),
-                             10)
+                             size_percent * 5)
+
+
+def draw_compare(win_comb, screen_size, screen):
+    """Функция отрисовки сравнения комбинаций на столе"""
+    screen_width, screen_height = screen_size
+    w_percent, h_percent = screen_width // 100, screen_height // 100
+
+    if win_comb == 'draw':
+        symbol = '='
+    elif win_comb == '1':
+        symbol = '>'
+    else:
+        symbol = '<'
+
+    font = pygame.font.Font('fonts/FiraSans-Bold.otf', screen_height // 100 * 25)
+    text = font.render(symbol, True, (250, 150, 0))
+    text_w = text.get_width()
+    text_h = text.get_height()
+    text_x = screen_width // 2 - text_w // 2
+    text_y = screen_height // 2 - text_h // 2 + 30 * h_percent
+
+    screen.blit(text, (text_x, text_y))
 
 
 def get_best_combination(game_set, player_set1, player_set2):
@@ -257,14 +292,19 @@ def get_best_combination(game_set, player_set1, player_set2):
 
     best = best_combination.best_comb(*comb1, *comb2)
     if best == '1':
-        win_comb = comb1
+        win_comb = best_combination.output(*comb1)
         print('Первая выигрышная')
+
     elif best == '0':
-        win_comb = comb2
+        win_comb = best_combination.output(*comb2)
         print('Вторая выигрышная')
     else:
-        win_comb = (comb1[0], comb1[1] + comb2[1])
+        best1 = best_combination.output(*comb1)
+        best2 = best_combination.output(*comb2)
+        win_comb = (best1[0], best1[1] + best2[1], best1[2] + best2[2])
         print('Ничья')
+
+    print(win_comb)
 
     return win_comb, best
 
@@ -372,6 +412,7 @@ def main():
         all_sprites.update(win_comb[0])
         show_combination(win_comb[0][0], screen_size=size, screen=screen)
         show_score(current_score, screen_size=size, screen=screen)
+        draw_compare(best_set, screen_size=size, screen=screen)
 
         if draw_border:
             draw_zone_border(table_zone, sets_pos, screen_size=size, card_size=card_size, screen=screen)
