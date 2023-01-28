@@ -3,6 +3,7 @@ import sys
 from random import sample, choice  # Для выбора наборов карт
 
 import pygame
+from pygame import mixer
 
 import best_combination
 
@@ -313,6 +314,16 @@ def main():
     """Основная функция программы."""
 
     pygame.init()
+    mixer.init()
+    mixer.music.load('sounds/background_music_1.mp3')
+    mixer.music.set_volume(0.1)
+    mixer.music.play(-1)
+
+    cards_sound = mixer.Sound('sounds/mb_card_clear_04.mp3')
+    click_sound = mixer.Sound('sounds/click.mp3')
+    point_sound = mixer.Sound('sounds/point_plus.mp3')
+    point_sound.set_volume(0.5)
+
     pygame.display.set_caption('GG Покерок')
 
     display_info = pygame.display.Info()
@@ -348,6 +359,8 @@ def main():
 
     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
+    cards_sound.play()
+
     draw_cards(screen=screen, sprite_group=all_sprites, images=images,
                screen_size=size, card_size=card_size,
                game_set=game_set, player_set1=player_set1, player_set2=player_set2)
@@ -369,15 +382,19 @@ def main():
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                click_sound.play()
                 click_pos = pygame.mouse.get_pos()
                 table_zone = get_screen_zone(click_pos, sets_pos)
 
                 if focused and table_zone != 0 and current_zone == table_zone:
                     if best_set == 'draw':
                         current_score += 1
+
                     elif (best_set == '1' and table_zone == 1) or (best_set == '0' and table_zone == 2):
                         current_score += 1
 
+                    point_sound.play()
+                    cards_sound.play()
                     all_sprites = pygame.sprite.Group()
                     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
