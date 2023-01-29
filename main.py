@@ -319,6 +319,9 @@ def main():
 
     cards_sound = mixer.Sound('sounds/mb_card_clear_04.mp3')
     time_over_sound = mixer.Sound('sounds/time_is_over.mp3')
+    stop_sound = mixer.Sound('sounds/full_stop.mp3')
+    stop_sound.set_volume(0.5)
+    game_over_sound = mixer.Sound('sounds/game_over.mp3')
     point_sound = mixer.Sound('sounds/point_plus.mp3')
     point_sound.set_volume(0.5)
 
@@ -354,7 +357,9 @@ def main():
     focused = False
     on_pause = True
     wait = False
+    last_wait = False
     game_is_over = False
+    time_stop = False
 
     current_score = 0
     table_zone = 0
@@ -395,7 +400,11 @@ def main():
                 if on_pause:
                     on_pause = False
                 else:
-                    if wait:
+                    if last_wait:
+                        game_is_over = True
+                        game_over_sound.play()
+
+                    elif wait:
                         cards_sound.play()
                         cards_sprites = pygame.sprite.Group()
                         game_set, player_set1, player_set2, images = update_sets(full_deck)
@@ -423,7 +432,12 @@ def main():
                             point_sound.play()
 
                         else:
-                            game_is_over = True
+                            wait = True
+                            last_wait = True
+                            time_stop = True
+
+                            mixer.music.fadeout(1000)
+                            stop_sound.play()
 
                         focused = False
                         draw_border = False
@@ -444,8 +458,6 @@ def main():
         screen.blit(scaled_background, (0, 0))
 
         if game_is_over:
-            screen.blit(scaled_background, (0, 0))
-            mixer.music.fadeout(1000)
             break
 
         cards_sprites.draw(screen)
@@ -453,7 +465,7 @@ def main():
         if on_pause:
             start_time = dt.datetime.now()
             show_time('1:00', screen_size=size, screen=screen)
-        else:
+        elif not time_stop:
             current_date = dt.datetime.now()
             diff = current_date - start_time
 
