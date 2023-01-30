@@ -16,6 +16,7 @@ class Card(pygame.sprite.Sprite):
     def __init__(self, *group, path, position, value, suit, screen, card_sizes=(225, 315)):
         super().__init__(*group)
         self.image = pygame.transform.scale(load_image(path), (card_sizes[0], card_sizes[1]))
+        self.path = path
         self.size = card_sizes
         self.rect = self.image.get_rect()
         self.rect.x = position[0]
@@ -177,6 +178,7 @@ def show_time(current_time, screen_size, screen):
 
 def get_sets_positions(screen_size, card_sizes):
     """Функция определения координат позиций наборов карт."""
+
     screen_width, screen_height = screen_size
     w_percent, h_percent = screen_width // 100, screen_height // 100
     card_width, card_height = card_sizes
@@ -198,6 +200,7 @@ def get_sets_positions(screen_size, card_sizes):
 
 def get_screen_zone(pos, sets_pos):
     """Функция определения нахождения курсора в игровых зонах."""
+
     zone = 0  # зона стола
     x, y = pos[0], pos[1]
 
@@ -235,6 +238,7 @@ def draw_zone_border(zone, sets_pos, screen_size, card_sizes, screen):
 
 def draw_game_over_screen(score, screen_size, screen):
     """Функция отрисовки экрана окончания игры."""
+
     screen_width, screen_height = screen_size
     w_percent, h_percent = screen_width // 100, screen_height // 100
 
@@ -319,9 +323,12 @@ def main():
 
     cards_sound = mixer.Sound('sounds/mb_card_clear_04.mp3')
     time_over_sound = mixer.Sound('sounds/time_is_over.mp3')
+
     stop_sound = mixer.Sound('sounds/full_stop.mp3')
     stop_sound.set_volume(0.5)
+
     game_over_sound = mixer.Sound('sounds/game_over.mp3')
+
     point_sound = mixer.Sound('sounds/point_plus.mp3')
     point_sound.set_volume(0.5)
 
@@ -338,18 +345,20 @@ def main():
     cursor_img = load_image("arrow.png")
     cursor_img = pygame.transform.scale(cursor_img, (40 * display_width // 1920, 70 * display_height // 1080))
 
+    cursor_img_rect = cursor_img.get_rect()
+
     background_image = load_image('background_big.jpg')
     scaled_background = pygame.transform.scale(background_image, (display_width, display_height))
-
-    cursor_img_rect = cursor_img.get_rect()
 
     sets_pos = get_sets_positions(size, card_size)
 
     start_time = dt.datetime.now()
 
     cards_sprites = pygame.sprite.Group()
+
     clock = pygame.time.Clock()
     fps = 60
+
     current_zone = 0
     running = True
     use_custom_cursor = True
@@ -420,6 +429,7 @@ def main():
                                    game_set=game_set, player_set1=player_set1, player_set2=player_set2)
 
                         wait = False
+
                     if focused and table_zone != 0 and current_zone == table_zone:
 
                         wait = True
@@ -445,6 +455,7 @@ def main():
                     elif focused and table_zone == 0:
                         focused = False
                         draw_border = False
+
                     elif table_zone != 0:
                         focused = True
                         draw_border = True
@@ -470,6 +481,7 @@ def main():
             diff = current_date - start_time
 
             seconds = abs(diff.seconds - 59) % 60
+
             if seconds == 0:
                 game_is_over = True
                 time_over_sound.play()
