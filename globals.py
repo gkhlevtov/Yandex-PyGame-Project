@@ -8,6 +8,68 @@ pygame.init()
 mixer.init()
 
 
+class Button(pygame.sprite.Sprite):
+    def __init__(self, position, width, height, color, text, text_size, text_color):
+        super().__init__()
+        self.pos_x = position[0]
+        self.pos_y = position[1]
+        self.width = width
+        self.height = height
+        self.default_color = color
+        self.focused_color = (color[0] - 40, color[1] - 40, color[2] - 40)
+        self.color = self.default_color
+        self.func = None
+        self.text = text
+        self.text_size = text_size
+        self.text_color = text_color
+
+        self.image = pygame.Surface((width, height))
+        self.image.fill(color)
+
+        font = pygame.font.Font('fonts/Intro.otf', text_size)
+        self.text_line = text
+        self.txt = font.render(text, True, text_color)
+        self.text_rect = self.txt.get_rect(center=(width // 2, height // 2))
+        self.text_rect.center = self.image.get_rect().center
+        self.image.blit(self.txt, self.text_rect)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = position[0]
+        self.rect.y = position[1]
+
+    def update(self):
+        self.image.fill(self.color)
+        self.image.blit(self.txt, self.text_rect)
+
+    def set_color(self, state):
+        if state:
+            self.color = self.focused_color
+        else:
+            self.color = self.default_color
+
+    def set_text(self, text):
+        self.text_line = text
+        font = pygame.font.Font(None, self.text_size)
+        self.txt = font.render(text, True, self.text_color)
+        self.text_rect = self.txt.get_rect(center=(self.width // 2, self.height // 2))
+
+    def get_text(self):
+        return self.text_line
+
+    def set_func(self, func):
+        self.func = func
+
+    def check_mouse_position(self, mouse_pos):
+        return self.rect.x <= mouse_pos[0] < self.rect.x + self.width and \
+            self.rect.y <= mouse_pos[1] < self.rect.y + self.height
+
+    def action(self, *x):
+        try:
+            self.func(*x)
+        except Exception as error:
+            print("No function now", error)
+
+
 def load_image(filename, color_key=None):
     """Функция загрузки изображения в pygame."""
 
@@ -31,9 +93,14 @@ def load_image(filename, color_key=None):
 
 
 click_sound = mixer.Sound('sounds/click.mp3')
+button_sound = mixer.Sound('sounds/button.mp3')
+
 
 display_info = pygame.display.Info()
 display_width, display_height = display_info.current_w, display_info.current_h
+
+w_percent = display_width // 100
+h_percent = display_height // 100
 
 card_size = 225 * display_width // 1920, 315 * display_height // 1080
 

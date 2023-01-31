@@ -8,6 +8,7 @@ from pygame import mixer
 import best_combination
 from globals import click_sound, full_deck, display_width, display_height, card_size
 from globals import load_image
+from main_menu import main as menu
 
 
 class Card(pygame.sprite.Sprite):
@@ -336,7 +337,7 @@ def main():
     mixer.music.set_volume(0.1)
     mixer.music.play(-1)
 
-    pygame.display.set_caption('GG Покерок')
+    pygame.display.set_caption('Poker Combos')
 
     size = (display_width, display_height)
 
@@ -393,9 +394,6 @@ def main():
     while running:
         if use_custom_cursor:
             pygame.mouse.set_visible(False)
-            if pygame.mouse.get_focused():
-                cursor_img_rect.center = pygame.mouse.get_pos()
-                screen.blit(cursor_img, cursor_img_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -504,7 +502,9 @@ def main():
             draw_zone_border(table_zone, sets_pos, screen_size=size, card_sizes=card_size, screen=screen)
 
         if use_custom_cursor:
-            screen.blit(cursor_img, cursor_img_rect)
+            if pygame.mouse.get_focused():
+                cursor_img_rect.center = pygame.mouse.get_pos()
+                screen.blit(cursor_img, cursor_img_rect)
 
         clock.tick(fps)
         pygame.display.flip()
@@ -525,6 +525,7 @@ def main():
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                menu()
                 pygame.quit()
                 sys.exit()
 
@@ -533,4 +534,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
