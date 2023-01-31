@@ -3,17 +3,24 @@ import sys
 import pygame
 from pygame import mixer
 
+import main as game
 from globals import Button
 from globals import click_sound, button_sound, display_width, display_height, w_percent, h_percent
 from globals import load_image
 
 
-def f():
-    print('aaa')
+def plug():
+    print('plug text')
 
 
 def close_game():
     print('Goodbye!')
+    pygame.quit()
+    sys.exit()
+
+
+def run_game():
+    game.main()
     pygame.quit()
     sys.exit()
 
@@ -51,13 +58,14 @@ def main():
     buttons = pygame.sprite.Group()
     button_sizes = (w_percent * 30, h_percent * 10)
     buttons_text = ('Играть', 'Статистика', 'Правила', 'Выйти')
-    buttons_funcs = (f, f, f, close_game)
+    buttons_funcs = (run_game, plug, plug, close_game)
 
     for i in range(4):
-        button_x = display_width // 2 - logo_img_rect.width // 2
+        button_x = display_width // 2 - button_sizes[0] // 2
         button_y = display_height // 2 - button_sizes[1] // 2 - 10 * h_percent + 15 * i * h_percent
 
-        button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), buttons_text[i], 50,
+        button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), buttons_text[i],
+                        h_percent * 7,
                         (0, 0, 0))
 
         button.set_func(buttons_funcs[i])

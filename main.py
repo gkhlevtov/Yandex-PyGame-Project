@@ -6,9 +6,10 @@ import pygame
 from pygame import mixer
 
 import best_combination
-from globals import click_sound, full_deck, display_width, display_height, card_size
+import menu as menu
+from globals import Button
+from globals import click_sound, full_deck, display_width, display_height, card_size, button_sound, w_percent, h_percent
 from globals import load_image
-from main_menu import main as menu
 
 
 class Card(pygame.sprite.Sprite):
@@ -243,12 +244,11 @@ def draw_game_over_screen(score, screen_size, screen):
     screen_width, screen_height = screen_size
     w_percent, h_percent = screen_width // 100, screen_height // 100
 
-    font = pygame.font.Font('fonts/FiraSans-Bold.otf', screen_height // 100 * 20)
-    line1 = font.render(f'Игра', True, (250, 150, 0))
-    line2 = font.render(f'окончена', True, (250, 150, 0))
-    line3 = font.render(f'Ваш счёт: {score}', True, (250, 150, 0))
+    font = pygame.font.Font('fonts/FiraSans-Bold.otf', h_percent * 20)
+    line1 = font.render(f'Игра окончена', True, (250, 150, 0))
+    line2 = font.render(f'Ваш счёт: {score}', True, (250, 150, 0))
 
-    lines = [line1, line2, line3]
+    lines = [line1, line2]
 
     for i in range(len(lines)):
         line = lines[i]
@@ -256,7 +256,7 @@ def draw_game_over_screen(score, screen_size, screen):
         text_h = line.get_height()
         text_x = screen_width // 2 - text_w // 2
         text_y = screen_height // 2 - text_h // 2 - 30 * h_percent + 25 * i * h_percent
-        if i == 2:
+        if i == 1:
             text_y += 5 * h_percent
 
         screen.blit(line, (text_x, text_y))
@@ -333,7 +333,7 @@ def main():
     point_sound = mixer.Sound('sounds/point_plus.mp3')
     point_sound.set_volume(0.5)
 
-    mixer.music.load('sounds/background_music_1.mp3')
+    mixer.music.load('sounds/background_music_2.mp3')
     mixer.music.set_volume(0.1)
     mixer.music.play(-1)
 
@@ -465,11 +465,16 @@ def main():
                     running = False
 
         screen.blit(scaled_background, (0, 0))
+        cards_sprites.draw(screen)
+
+        if last_wait:
+            show_combination(win_comb[0][0], screen_size=size, screen=screen)
+            cards_sprites.draw(screen)
+            cards_sprites.update(win_comb[0])
+            draw_compare(best_set, screen_size=size, screen=screen)
 
         if game_is_over:
             break
-
-        cards_sprites.draw(screen)
 
         if on_pause:
             start_time = dt.datetime.now()
@@ -481,7 +486,11 @@ def main():
             seconds = abs(diff.seconds - 59) % 60
 
             if seconds == 0:
-                game_is_over = True
+                wait = True
+                last_wait = True
+                time_stop = True
+
+                mixer.music.fadeout(1000)
                 time_over_sound.play()
 
             if len(str(seconds)) == 1:
@@ -511,23 +520,63 @@ def main():
 
     print(f'Итоговый счёт: {current_score}')
 
+    def go_to_menu():
+        menu.main()
+        pygame.quit()
+        sys.exit()
+
+    buttons = pygame.sprite.Group()
+    button_sizes = (w_percent * 40, h_percent * 15)
+
+    button_x = display_width // 2 - button_sizes[0] // 2
+    button_y = display_height // 2 - button_sizes[1] // 2 + 40 * h_percent
+    button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Выйти в меню',
+                    h_percent * 7,
+                    (0, 0, 0))
+    button.set_func(go_to_menu)
+    buttons.add(button)
+
     while running:
         screen.blit(scaled_background, (0, 0))
         draw_game_over_screen(current_score, screen_size=size, screen=screen)
         if use_custom_cursor:
             pygame.mouse.set_visible(False)
-            if pygame.mouse.get_focused():
-                cursor_img_rect.center = pygame.mouse.get_pos()
-                screen.blit(cursor_img, cursor_img_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
+            if event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                for button in buttons:
+                    if button.check_mouse_position((pos[0], pos[1])):
+                        button.set_color(True)
+                        break
+                    else:
+                        button.set_color(False)
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-                menu()
-                pygame.quit()
-                sys.exit()
+                click_sound.play()
+                click_pos = pygame.mouse.get_pos()
+
+                for button in buttons:
+                    if button.check_mouse_position(click_pos):
+                        button_sound.play()
+                        if button.func is None:
+                            print('Nothing happened')
+                        else:
+                            button.action()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+        buttons.update()
+        buttons.draw(screen)
+
+        if pygame.mouse.get_focused():
+            cursor_img_rect.center = pygame.mouse.get_pos()
+            screen.blit(cursor_img, cursor_img_rect)
 
         clock.tick(fps)
         pygame.display.flip()

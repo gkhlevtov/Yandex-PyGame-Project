@@ -9,6 +9,8 @@ mixer.init()
 
 
 class Button(pygame.sprite.Sprite):
+    """Класс кнопки."""
+
     def __init__(self, position, width, height, color, text, text_size, text_color):
         super().__init__()
         self.pos_x = position[0]
@@ -94,7 +96,6 @@ def load_image(filename, color_key=None):
 
 click_sound = mixer.Sound('sounds/click.mp3')
 button_sound = mixer.Sound('sounds/button.mp3')
-
 
 display_info = pygame.display.Info()
 display_width, display_height = display_info.current_w, display_info.current_h
