@@ -120,7 +120,7 @@ def get_max_score_row():
     return sorted(rows, key=lambda x: -int(x[1]))[0]
 
 
-def make_graph(table_name='data.csv', file_name='graph.png'):
+def make_plot(table_name='data.csv', file_name='plot.png'):
     """Функция создания графика очков."""
     fig, ax = matplotlib.pyplot.subplots(figsize=(40, 30))
 
