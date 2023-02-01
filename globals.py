@@ -1,4 +1,3 @@
-import csv
 import os
 import sys
 
@@ -93,6 +92,19 @@ def load_image(filename, color_key=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+class RunWindow:
+    """Класс запуска нового окна."""
+
+    def __init__(self, window):
+        self.window = window
+        print(window)
+
+    def run(self):
+        self.window.main()
+        pygame.quit()
+        sys.exit()
 
 
 click_sound = mixer.Sound('sounds/click.mp3')
