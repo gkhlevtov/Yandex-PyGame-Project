@@ -1,3 +1,4 @@
+import csv
 import datetime as dt
 import sys
 from random import sample, choice  # Для выбора наборов карт
@@ -316,6 +317,31 @@ def get_best_combination(game_set, player_set1, player_set2):
     return win_comb, best
 
 
+def go_to_menu():
+    menu.main()
+    pygame.quit()
+    sys.exit()
+
+
+def write_data(filename, score, time, date):
+    with open(filename, 'r', newline='', encoding="utf8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+        rows = []
+        for index, row in enumerate(reader):
+            print(row)
+            rows.append(row)
+
+    with open(filename, 'w', newline='', encoding="utf8") as csvfile:
+        writer = csv.writer(
+            csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in rows:
+            writer.writerow(row)
+        if len(rows) > 1:
+            writer.writerow([int(rows[-1][0]) + 1, score, time, date])
+        else:
+            writer.writerow([1, score, time, date])
+
+
 def main():
     """Основная функция программы."""
 
@@ -371,7 +397,11 @@ def main():
     game_is_over = False
     time_stop = False
 
+    date = dt.datetime.now()
+    game_date = date.strftime("%d.%m.%y")
+
     current_score = 0
+    seconds = 60
     table_zone = 0
     draw_border = False
 
@@ -520,10 +550,9 @@ def main():
 
     print(f'Итоговый счёт: {current_score}')
 
-    def go_to_menu():
-        menu.main()
-        pygame.quit()
-        sys.exit()
+    timing = 60 - seconds
+
+    write_data('data.csv', current_score, timing, game_date)
 
     buttons = pygame.sprite.Group()
     button_sizes = (w_percent * 40, h_percent * 15)
