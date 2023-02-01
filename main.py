@@ -9,8 +9,11 @@ from pygame import mixer
 import best_combination
 import menu as menu
 from globals import Button
-from globals import click_sound, full_deck, display_width, display_height, card_size, button_sound, w_percent, h_percent
-from globals import load_image
+from globals import fps, use_custom_cursor, \
+    click_sound, button_sound, \
+    full_deck, display_width, display_height, card_size, \
+    w_percent, h_percent
+from globals import load_image, RunWindow
 
 
 class Card(pygame.sprite.Sprite):
@@ -317,18 +320,11 @@ def get_best_combination(game_set, player_set1, player_set2):
     return win_comb, best
 
 
-def go_to_menu():
-    menu.main()
-    pygame.quit()
-    sys.exit()
-
-
 def write_data(filename, score, time, date):
     with open(filename, 'r', newline='', encoding="utf8") as csvfile:
         reader = csv.reader(csvfile, delimiter=';', quotechar='"')
         rows = []
         for index, row in enumerate(reader):
-            print(row)
             rows.append(row)
 
     with open(filename, 'w', newline='', encoding="utf8") as csvfile:
@@ -370,7 +366,7 @@ def main():
     screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
     cursor_img = load_image("arrow.png")
-    cursor_img = pygame.transform.scale(cursor_img, (40 * display_width // 1920, 70 * display_height // 1080))
+    cursor_img = pygame.transform.scale(cursor_img, (36 * display_width // 1920, 63 * display_height // 1080))
 
     cursor_img_rect = cursor_img.get_rect()
 
@@ -384,11 +380,9 @@ def main():
     cards_sprites = pygame.sprite.Group()
 
     clock = pygame.time.Clock()
-    fps = 60
 
     current_zone = 0
     running = True
-    use_custom_cursor = True
 
     focused = False
     on_pause = True
@@ -562,7 +556,8 @@ def main():
     button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Выйти в меню',
                     h_percent * 7,
                     (0, 0, 0))
-    button.set_func(go_to_menu)
+
+    button.set_func(RunWindow(menu).run)
     buttons.add(button)
 
     while running:
