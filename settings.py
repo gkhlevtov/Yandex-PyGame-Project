@@ -3,9 +3,7 @@ import sys
 import pygame
 from pygame import mixer
 
-import main as game
-import rules
-import statistics
+import menu as menu
 from globals import Button
 from globals import fps, use_custom_cursor, \
     click_sound, button_sound, \
@@ -14,33 +12,17 @@ from globals import fps, use_custom_cursor, \
 from globals import load_image, RunWindow
 
 
-def close_game():
-    print('Goodbye!')
-    pygame.quit()
-    sys.exit()
-
-
 def main():
     """Основная функция программы."""
 
     pygame.init()
     mixer.init()
 
-    mixer.music.load('sounds/background_music_1.mp3')
-    mixer.music.set_volume(0.1)
-    mixer.music.play(-1)
-
-    pygame.display.set_caption('Poker Combos')
+    pygame.display.set_caption('Настройки игры')
 
     size = (display_width, display_height)
 
     screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-
-    logo_img = load_image("logo.png")
-    logo_img = pygame.transform.scale(logo_img, (600 * display_width // 1920, 400 * display_height // 1080))
-    logo_img_rect = logo_img.get_rect()
-    logo_x = display_width // 2 - logo_img_rect.width // 2
-    logo_y = w_percent * 2
 
     cursor_img = load_image("arrow.png")
     cursor_img = pygame.transform.scale(cursor_img, (36 * display_width // 1920, 63 * display_height // 1080))
@@ -51,20 +33,16 @@ def main():
     scaled_background = pygame.transform.scale(background_image, (display_width, display_height))
 
     buttons = pygame.sprite.Group()
-    button_sizes = (w_percent * 30, h_percent * 10)
-    buttons_text = ('Играть', 'Статистика', 'Правила', 'Выйти')
-    buttons_funcs = (RunWindow(game).run, RunWindow(statistics).run, RunWindow(rules).run, close_game)
+    button_sizes = (w_percent * 15, h_percent * 10)
 
-    for i in range(4):
-        button_x = display_width // 2 - button_sizes[0] // 2
-        button_y = display_height // 2 - button_sizes[1] // 2 - 10 * h_percent + 15 * i * h_percent
+    button_x = w_percent * 4
+    button_y = h_percent * 15
+    button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Назад',
+                    h_percent * 7,
+                    (0, 0, 0))
 
-        button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), buttons_text[i],
-                        h_percent * 7,
-                        (0, 0, 0))
-
-        button.set_func(buttons_funcs[i])
-        buttons.add(button)
+    button.set_func(RunWindow(menu).run)
+    buttons.add(button)
 
     clock = pygame.time.Clock()
 
@@ -72,7 +50,6 @@ def main():
 
     while running:
         screen.blit(scaled_background, (0, 0))
-        screen.blit(logo_img, (logo_x, logo_y))
 
         if use_custom_cursor:
             pygame.mouse.set_visible(False)
