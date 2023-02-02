@@ -217,7 +217,7 @@ def best_comb(name1, comb1, name2, comb2):  # Определение лучше�
         kickers += 1
         if comb1[0][1] > comb2[0][1]:
             return '1'
-        if comb1[0][1] > comb2[0][1]:
+        if comb1[0][1] < comb2[0][1]:
             return '0'
         return 'draw'
     if name == 'Флеш':
