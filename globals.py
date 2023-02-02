@@ -5,6 +5,7 @@ import sys
 import matplotlib.pyplot
 import pygame
 import pygame.mixer as mixer
+from PIL import Image, ImageEnhance
 
 pygame.init()
 mixer.init()
@@ -132,7 +133,7 @@ class ImageButton(Button):
             print("No function now", error)
 
 
-def load_image(filename, color_key=None):
+def load_image(filename, color_key=None, gray=None):
     """Функция загрузки изображения в pygame."""
 
     fullname = os.path.join('images', filename)
@@ -141,6 +142,13 @@ def load_image(filename, color_key=None):
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
+
+    if gray:
+        im = Image.open(fullname)
+        enhancer = ImageEnhance.Brightness(im)
+        im = enhancer.enhance(0.5)
+        fullname = 'images\gray.png'
+        im.save(fullname)
 
     image = pygame.image.load(fullname)
 

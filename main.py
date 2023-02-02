@@ -21,8 +21,14 @@ class Card(pygame.sprite.Sprite):
 
     def __init__(self, *group, path, position, value, suit, screen, card_sizes=(225, 315)):
         super().__init__(*group)
+        self.size_percent = card_sizes[0] // 100
         self.image = pygame.transform.scale(load_image(path), (card_sizes[0], card_sizes[1]))
+        self.gray_image = pygame.transform.scale(load_image(path, gray=True), (card_sizes[0], card_sizes[1]))
+
+        self.frame = pygame.transform.scale(load_image('frame.png'), (card_sizes[0] + self.size_percent * 34,
+                                                                      card_sizes[1] + self.size_percent * 34))
         self.path = path
+        self.position = position
         self.size = card_sizes
         self.rect = self.image.get_rect()
         self.rect.x = position[0]
@@ -36,24 +42,27 @@ class Card(pygame.sprite.Sprite):
         for card in best_comb[1]:
             value, suit = card[1], card[2]
             if self.value == value and self.suit == suit:
-                size_percent = self.size[0] // 100
-                stroke_pos = (self.rect.x - size_percent * 10,
-                              self.rect.y - size_percent * 10,
-                              self.size[0] + size_percent * 20,
-                              self.size[1] + size_percent * 20)
-                pygame.draw.rect(self.screen, (255, 0, 0), stroke_pos, size_percent * 5)
+                stroke_pos = (self.rect.x - self.size_percent * 12,
+                              self.rect.y - self.size_percent * 12)
+                self.rect.x = self.position[0] - self.size_percent * 5
+                self.rect.y = self.position[1] - self.size_percent * 20
+                self.image = pygame.transform.scale(load_image(self.path),
+                                                    (self.size[0] + self.size_percent * 10,
+                                                     self.size[1] + self.size_percent * 10))
+                self.screen.blit(self.frame, stroke_pos)
                 break
+            else:
+                self.image = self.gray_image
 
         if best_comb[2]:
             for card in best_comb[2]:
                 value, suit = card[1], card[2]
                 if self.value == value and self.suit == suit:
-                    size_percent = self.size[0] // 100
-                    stroke_pos = (self.rect.x - size_percent * 10,
-                                  self.rect.y - size_percent * 10,
-                                  self.size[0] + size_percent * 20,
-                                  self.size[1] + size_percent * 20)
-                    pygame.draw.rect(self.screen, (0, 0, 0), stroke_pos, size_percent * 5)
+                    self.rect.x = self.position[0] - self.size_percent * 5
+                    self.rect.y = self.position[1] - self.size_percent * 20
+                    self.image = pygame.transform.scale(load_image(self.path),
+                                                        (self.size[0] + self.size_percent * 10,
+                                                         self.size[1] + self.size_percent * 10))
                     break
 
 
