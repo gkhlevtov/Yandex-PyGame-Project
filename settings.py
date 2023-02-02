@@ -37,12 +37,12 @@ def main():
 
     button_x = w_percent * 4
     button_y = h_percent * 15
-    button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Назад',
-                    h_percent * 7,
-                    (0, 0, 0))
+    go_back_button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Назад',
+                            h_percent * 7,
+                            (0, 0, 0))
 
-    button.set_func(RunWindow(menu).run)
-    buttons.add(button)
+    go_back_button.set_func(RunWindow(menu).run)
+    buttons.add(go_back_button)
 
     clock = pygame.time.Clock()
 
