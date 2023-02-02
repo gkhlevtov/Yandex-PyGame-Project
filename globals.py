@@ -86,6 +86,52 @@ class Button(pygame.sprite.Sprite):
             print("No function now", error)
 
 
+class ImageButton(Button):
+    """Класс кнопки."""
+
+    def __init__(self, position, width, height, color, text, text_size, text_color, image_path):
+        super().__init__(position, width, height, color, text, text_size, text_color)
+
+        self.pos_x = position[0]
+        self.pos_y = position[1]
+        self.width = width
+        self.height = height
+        self.default_image = pygame.transform.scale(load_image(image_path), (width, height))
+        self.focused_image = pygame.transform.scale(load_image(f'{image_path[:-4]}_f.png'), (width, height))
+        self.color = self.default_color
+        self.func = None
+        self.text = text
+        self.text_size = text_size
+        self.text_color = text_color
+
+        self.image = self.default_image
+        self.rect = self.image.get_rect()
+        self.rect.x = position[0]
+        self.rect.y = position[1]
+
+    def update(self):
+        pass
+
+    def set_color(self, state):
+        if state:
+            self.image = self.focused_image
+        else:
+            self.image = self.default_image
+
+    def set_func(self, func):
+        self.func = func
+
+    def check_mouse_position(self, mouse_pos):
+        return self.rect.x <= mouse_pos[0] < self.rect.x + self.width and \
+            self.rect.y <= mouse_pos[1] < self.rect.y + self.height
+
+    def action(self, *x):
+        try:
+            self.func(*x)
+        except Exception as error:
+            print("No function now", error)
+
+
 def load_image(filename, color_key=None):
     """Функция загрузки изображения в pygame."""
 

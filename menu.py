@@ -5,8 +5,9 @@ from pygame import mixer
 
 import main as game
 import rules
+import settings
 import statistics
-from globals import Button
+from globals import Button, ImageButton
 from globals import fps, use_custom_cursor, \
     click_sound, button_sound, \
     display_width, display_height, \
@@ -66,6 +67,12 @@ def main():
         button.set_func(buttons_funcs[i])
         buttons.add(button)
 
+    settings_button = ImageButton((w_percent * 90, h_percent * 3), w_percent * 7, w_percent * 7, (255, 173, 64),
+                                  'Настройки', h_percent * 7, (0, 0, 0), 'settings.png')
+
+    settings_button.set_func(RunWindow(settings).run)
+
+    buttons.add(settings_button)
     clock = pygame.time.Clock()
 
     running = True
