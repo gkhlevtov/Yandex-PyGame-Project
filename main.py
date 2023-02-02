@@ -25,8 +25,8 @@ class Card(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(load_image(path), (card_sizes[0], card_sizes[1]))
         self.gray_image = pygame.transform.scale(load_image(path, gray=True), (card_sizes[0], card_sizes[1]))
 
-        self.frame = pygame.transform.scale(load_image('frame.png'), (card_sizes[0] + self.size_percent * 34,
-                                                                      card_sizes[1] + self.size_percent * 34))
+        self.frame = pygame.transform.scale(load_image('frame.png'), (card_sizes[0] + self.size_percent * 28,
+                                                                      card_sizes[1] + self.size_percent * 28))
         self.path = path
         self.position = position
         self.size = card_sizes
@@ -42,8 +42,8 @@ class Card(pygame.sprite.Sprite):
         for card in best_comb[1]:
             value, suit = card[1], card[2]
             if self.value == value and self.suit == suit:
-                stroke_pos = (self.rect.x - self.size_percent * 12,
-                              self.rect.y - self.size_percent * 12)
+                stroke_pos = (self.rect.x - self.size_percent * 9,
+                              self.rect.y - self.size_percent * 9)
                 self.rect.x = self.position[0] - self.size_percent * 5
                 self.rect.y = self.position[1] - self.size_percent * 20
                 self.image = pygame.transform.scale(load_image(self.path),

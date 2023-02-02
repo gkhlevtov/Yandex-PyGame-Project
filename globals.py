@@ -88,7 +88,7 @@ class Button(pygame.sprite.Sprite):
 
 
 class ImageButton(Button):
-    """Класс кнопки."""
+    """Класс кнопки-картинки."""
 
     def __init__(self, position, width, height, color, text, text_size, text_color, image_path):
         super().__init__(position, width, height, color, text, text_size, text_color)

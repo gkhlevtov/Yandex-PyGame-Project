@@ -67,8 +67,10 @@ def main():
         button.set_func(buttons_funcs[i])
         buttons.add(button)
 
-    settings_button = ImageButton((w_percent * 90, h_percent * 3), w_percent * 7, w_percent * 7, (255, 173, 64),
-                                  'Настройки', h_percent * 7, (0, 0, 0), 'settings.png')
+    settings_button = ImageButton((w_percent * 90, h_percent * 3),
+                                  w_percent * 7, w_percent * 7,
+                                  (255, 173, 64), 'Настройки',
+                                  h_percent * 7, (0, 0, 0), 'settings.png')
 
     settings_button.set_func(RunWindow(settings).run)
 
