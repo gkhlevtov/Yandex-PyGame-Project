@@ -12,7 +12,7 @@ from globals import Button
 from globals import fps, use_custom_cursor, \
     click_sound, button_sound, \
     full_deck, display_width, display_height, card_size, \
-    w_percent, h_percent
+    w_percent, h_percent, game_log
 from globals import load_image, RunWindow
 
 
@@ -297,7 +297,7 @@ def draw_compare(win_comb, screen_size, screen):
     screen.blit(text, (text_x, text_y))
 
 
-def get_best_combination(game_set, player_set1, player_set2):
+def get_best_combination(game_set, player_set1, player_set2, log=False):
     """
     Функция определения выигрышной комбинации из двух наборов
     с использованием функций best_combinations.
@@ -307,24 +307,29 @@ def get_best_combination(game_set, player_set1, player_set2):
     comb1 = best_combination.comb(*full_set1)
     comb2 = best_combination.comb(*full_set2)
 
-    print(*comb1, sep='\t')
-    print(*comb2, sep='\t', end='\n\n')
+    if log:
+        print('')
+        print('=' * 100)
+        print(*comb1, sep='\t')
+        print(*comb2, sep='\t', end='\n\n')
 
     best = best_combination.best_comb(*comb1, *comb2)
     if best == '1':
         win_comb = best_combination.output(*comb1)
-        print('Первая выигрышная')
+        win_log = 'Первая выигрышная'
 
     elif best == '0':
         win_comb = best_combination.output(*comb2)
-        print('Вторая выигрышная')
+        win_log = 'Вторая выигрышная'
     else:
         best1 = best_combination.output(*comb1)
         best2 = best_combination.output(*comb2)
         win_comb = (best1[0], best1[1] + best2[1], best1[2] + best2[2])
-        print('Ничья')
+        win_log = 'Ничья'
 
-    print(win_comb)
+    if log:
+        print(win_log)
+        print(*win_comb)
 
     return win_comb, best
 
@@ -408,9 +413,6 @@ def main():
     table_zone = 0
     draw_border = False
 
-    print('')
-    print('=' * 100)
-
     game_set, player_set1, player_set2, images = update_sets(full_deck)
 
     cards_sound.play()
@@ -419,7 +421,7 @@ def main():
                screen_size=size, card_sizes=card_size,
                game_set=game_set, player_set1=player_set1, player_set2=player_set2)
 
-    win_comb = get_best_combination(game_set, player_set1, player_set2)
+    win_comb = get_best_combination(game_set, player_set1, player_set2, log=game_log)
     best_set = win_comb[1]
     show_combination(win_comb[0][0], screen_size=size, screen=screen)
     show_score(current_score, screen_size=size, screen=screen)
@@ -449,10 +451,7 @@ def main():
                         cards_sprites = pygame.sprite.Group()
                         game_set, player_set1, player_set2, images = update_sets(full_deck)
 
-                        print(f'Текущие очки: {current_score}', end='\n\n')
-                        print('=' * 100)
-
-                        win_comb = get_best_combination(game_set, player_set1, player_set2)
+                        win_comb = get_best_combination(game_set, player_set1, player_set2, log=game_log)
                         best_set = win_comb[1]
 
                         draw_cards(screen=screen, sprite_group=cards_sprites, images=images,
@@ -551,7 +550,8 @@ def main():
         clock.tick(fps)
         pygame.display.flip()
 
-    print(f'Итоговый счёт: {current_score}')
+    if game_log:
+        print(f'Итоговый счёт: {current_score}')
 
     timing = 60 - seconds
 

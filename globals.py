@@ -218,6 +218,7 @@ h_percent = display_height // 100
 card_size = 225 * display_width // 1920, 315 * display_height // 1080
 
 use_custom_cursor = True
+game_log = False
 fps = 60
 
 # Полная колода карт
