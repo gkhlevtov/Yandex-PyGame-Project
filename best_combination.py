@@ -18,17 +18,17 @@ def suit5(suits):  # Проверка на наличие масти, встре
 
 def count_values(values):  # Частотность значений
     a = list(set(values))
-    b = [values.count(x) for x in a]
-    return sorted(list(zip(a, b)), key=lambda x: -x[1])
+    sp = [values.count(x) for x in a]
+    return sorted(list(zip(a, sp)), key=lambda x: -x[1])
 
 
 def max_kickers(name, lst, res):  # Определение максимальных кикеров
-    kickers = sorted([x for x in lst if x not in res], key=lambda x: x[1])
+    k = sorted([x for x in lst if x not in res], key=lambda x: x[1])
     if name == 'Каре' or name == 'Две пары':
-        return [kickers[-1]]
+        return [k[-1]]
     elif name == 'Сет':
-        return kickers[-2:]
-    return kickers[-3:]
+        return k[-2:]
+    return k[-3:]
 
 
 def comb(values, suits, f=True):  # Определение комбинации
@@ -87,13 +87,13 @@ def comb(values, suits, f=True):  # Определение комбинации
         return 'Флеш', res
 
     # Комбинация Стрит
-    slst = list(map(str, sorted(set(values))))  # отсортированный список с множеством значений
+    slst = list(map(str, sorted(set(values))))  # Отсортированный список с множеством значений
     if len(slst) >= 5:
         if (len(slst) == 5 and ' '.join(slst) in sequence) or \
                 (len(slst) == 6 and (' '.join(slst[:5]) in sequence or ' '.join(slst[1:]) in sequence)) or \
-                (len(slst) == 7 and
-                 (' '.join(slst[:5]) in sequence or ' '.join(slst[1:6]) in sequence or ' '.join(
-                     slst[2:]) in sequence)):
+                (len(slst) == 7 and (
+                        ' '.join(slst[:5]) in sequence or ' '.join(slst[1:6]) in sequence or ' '.join(slst[2:])
+                        in sequence)):
             # Временный список, отсортированный по значению в порядке невозрастания и по id в порядке возрастания
             tlst = sorted(lst, key=lambda x: (-x[1], x[0]))
             res = []
@@ -145,13 +145,18 @@ def comb(values, suits, f=True):  # Определение комбинации
     return 'Старшая карта', [max(lst, key=lambda x: x[1])]
 
 
+kickers = 0  # Количество значимых кикеров
+
+
 def best_comb(name1, comb1, name2, comb2):  # Определение лучшей комбинации
+    global kickers
+    kickers = 0
     if name1 != name2:
         if combinations.index(name1) > combinations.index(name2):
             return '1'
         return '0'
     name = name1
-    if name == 'Стрит-флеш' or 'Стрит' or name == 'Старшая карта':
+    if name == 'Стрит-флеш' or name == 'Стрит' or name == 'Старшая карта':
         if comb1[-1][1] > comb2[-1][1]:
             return '1'
         elif comb1[-1][1] == comb2[-1][1]:
@@ -160,33 +165,38 @@ def best_comb(name1, comb1, name2, comb2):  # Определение лучше�
     if name == 'Каре':
         if comb1[-1][1] > comb2[-1][1]:
             return '1'
-        elif comb1[-1][1] == comb2[-1][1] and comb1[0][1] > comb2[0][1]:
+        if comb1[-1][1] < comb2[-1][1]:
+            return '0'
+        kickers += 1
+        if comb1[0][1] > comb2[0][1]:
             return '1'
-        elif comb1[0][1] == comb2[0][1]:
-            return 'draw'
-        return '0'
+        if comb1[0][1] < comb2[0][1]:
+            return '0'
+        return 'draw'
     if name == 'Сет':
         if comb1[-1][1] > comb2[-1][1]:
             return '1'
-        elif comb1[-1][1] == comb2[-1][1] and comb1[1][1] > comb2[1][1]:
-            return '1'
-        elif comb1[1][1] == comb2[1][1] and comb1[0][1] > comb2[0][1]:
-            return '1'
-        elif comb1[0][1] == comb2[0][1]:
-            return 'draw'
-        return '0'
+        if comb1[-1][1] < comb2[-1][1]:
+            return '0'
+        for i in range(1, -1, -1):
+            kickers += 1
+            if comb1[i][1] > comb2[i][1]:
+                return '1'
+            if comb1[i][1] < comb2[i][1]:
+                return '0'
+        return 'draw'
     if name == 'Пара':
         if comb1[-1][1] > comb2[-1][1]:
             return '1'
-        elif comb1[-1][1] == comb2[-1][1] and comb1[2][1] > comb2[2][1]:
-            return '1'
-        elif comb1[2][1] == comb2[2][1] and comb1[1][1] > comb2[1][1]:
-            return '1'
-        elif comb1[1][1] == comb2[1][1] and comb1[0][1] > comb2[0][1]:
-            return '1'
-        elif comb1[0][1] == comb2[0][1]:
-            return 'draw'
-        return '0'
+        if comb1[-1][1] < comb2[-1][1]:
+            return '0'
+        for i in range(2, -1, -1):
+            kickers += 1
+            if comb1[i][1] > comb2[i][1]:
+                return '1'
+            if comb1[i][1] < comb2[i][1]:
+                return '0'
+        return 'draw'
     if name == 'Фулл-хаус':
         if comb1[0][1] > comb2[0][1]:
             return '1'
@@ -198,13 +208,18 @@ def best_comb(name1, comb1, name2, comb2):  # Определение лучше�
     if name == 'Две пары':
         if comb1[1][1] > comb2[1][1]:
             return '1'
-        elif comb1[1][1] == comb2[1][1] and comb1[-1][1] > comb2[-1][1]:
+        if comb1[1][1] < comb2[1][1]:
+            return '0'
+        if comb1[-1][1] > comb2[-1][1]:
             return '1'
-        elif comb1[-1][1] == comb2[-1][1] and comb1[0][1] > comb2[0][1]:
+        if comb1[-1][1] < comb2[-1][1]:
+            return '0'
+        kickers += 1
+        if comb1[0][1] > comb2[0][1]:
             return '1'
-        elif comb1[0][1] == comb2[0][1]:
-            return 'draw'
-        return '0'
+        if comb1[0][1] < comb2[0][1]:
+            return '0'
+        return 'draw'
     if name == 'Флеш':
         if comb1[-1][1] > comb2[-1][1]:
             return '1'
@@ -219,3 +234,24 @@ def best_comb(name1, comb1, name2, comb2):  # Определение лучше�
         elif comb1[-5][1] == comb2[-5][1]:
             return 'draw'
         return '0'
+
+
+def output(name, c):  # Вывод комбинации и значимых кикеров при их наличии
+    if name == 'Каре' or name == 'Сет' or name == 'Две пары' or name == 'Пара':
+        if kickers:
+            if name == 'Каре' or name == 'Две пары':
+                return name, c[1:], [c[0]]
+            if name == 'Сет':
+                return name, c[2:], c[2 - kickers:2]
+            if name == 'Пара':
+                return name, c[3:], c[3 - kickers:3]
+
+        else:
+            if name == 'Каре' or name == 'Две пары':
+                return name, c[1:], []
+            if name == 'Сет':
+                return name, c[2:], []
+            if name == 'Пара':
+                return name, c[3:], []
+
+    return name, c, []

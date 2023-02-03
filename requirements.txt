@@ -1,0 +1,5 @@
+pygame~=2.1.2
+pypiwin32~=223
+pywin32~=305
+matplotlib~=3.6.1
+Pillow~=9.2.0
