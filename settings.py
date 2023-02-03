@@ -68,14 +68,14 @@ def show_volume(screen_size, screen):
     w_percent, h_percent = screen_width // 100, screen_height // 100
     font = pygame.font.Font('fonts/Intro.otf', screen_height // 100 * 7)
     text1 = font.render(f'Громкость музыки: {current_volume}', True, (250, 150, 0))
-    text1_x = 33 * w_percent
+    text1_x = 25 * w_percent
     text1_y = 28 * h_percent
 
     screen.blit(text1, (text1_x, text1_y))
 
     text2 = font.render(f'Выбран курсор: {cursor}', True, (250, 150, 0))
-    text2_x = 33 * w_percent
-    text2_y = 50 * h_percent
+    text2_x = 25 * w_percent
+    text2_y = 60 * h_percent
 
     screen.blit(text2, (text2_x, text2_y))
 
@@ -85,6 +85,12 @@ def main():
 
     pygame.init()
     mixer.init()
+
+    volume = int(read_data('settings_values.txt')[0])
+
+    mixer.music.load('sounds/background_music_1.mp3')
+    mixer.music.set_volume(volume / 100)
+    mixer.music.play(-1)
 
     pygame.display.set_caption('Настройки игры')
 
@@ -110,7 +116,7 @@ def main():
     go_back_button.set_func(RunWindow(menu).run)
     buttons.add(go_back_button)
 
-    arrow_up_button = ImageButton((w_percent * 25, h_percent * 15),
+    arrow_up_button = ImageButton((w_percent * 80, h_percent * 15),
                                   w_percent * 7, w_percent * 7,
                                   (255, 173, 64), 'Увеличить',
                                   h_percent * 7, (0, 0, 0), 'arrow_up.png')
@@ -118,7 +124,7 @@ def main():
     arrow_up_button.set_func(volume_up)
     buttons.add(arrow_up_button)
 
-    arrow_down_button = ImageButton((w_percent * 25, h_percent * 35),
+    arrow_down_button = ImageButton((w_percent * 80, h_percent * 35),
                                     w_percent * 7, w_percent * 7,
                                     (255, 173, 64), 'Уменьшить',
                                     h_percent * 7, (0, 0, 0), 'arrow_down.png')
@@ -126,7 +132,7 @@ def main():
     arrow_down_button.set_func(volume_down)
     buttons.add(arrow_down_button)
 
-    default_cursor_button = ImageButton((w_percent * 35, h_percent * 65),
+    default_cursor_button = ImageButton((w_percent * 25, h_percent * 75),
                                         w_percent * 8, w_percent * 8,
                                         (255, 173, 64), 'Стандартный',
                                         h_percent * 7, (0, 0, 0), 'default_cursor.png')
@@ -134,7 +140,7 @@ def main():
     default_cursor_button.set_func(default_cursor)
     buttons.add(default_cursor_button)
 
-    custom_cursor_button = ImageButton((w_percent * 50, h_percent * 65),
+    custom_cursor_button = ImageButton((w_percent * 40, h_percent * 75),
                                        w_percent * 5, w_percent * 7,
                                        (255, 173, 64), 'Кастомный',
                                        h_percent * 7, (0, 0, 0), 'arrow.png')

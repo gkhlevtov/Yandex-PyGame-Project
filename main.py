@@ -358,19 +358,23 @@ def main():
     pygame.init()
     mixer.init()
 
+    volume = int(read_data('settings_values.txt')[0])
+
     cards_sound = mixer.Sound('sounds/mb_card_clear_04.mp3')
     time_over_sound = mixer.Sound('sounds/time_is_over.mp3')
+    time_over_sound.set_volume(volume / 50)
 
     stop_sound = mixer.Sound('sounds/full_stop.mp3')
-    stop_sound.set_volume(0.5)
+    stop_sound.set_volume(volume / 100)
 
     game_over_sound = mixer.Sound('sounds/game_over.mp3')
+    game_over_sound.set_volume(volume / 100)
 
     point_sound = mixer.Sound('sounds/point_plus.mp3')
-    point_sound.set_volume(0.5)
+    point_sound.set_volume(volume / 50)
 
     mixer.music.load('sounds/background_music_2.mp3')
-    mixer.music.set_volume(0.1)
+    mixer.music.set_volume(volume / 100)
     mixer.music.play(-1)
 
     pygame.display.set_caption('Poker Combos')

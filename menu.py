@@ -30,8 +30,10 @@ def main():
     pygame.init()
     mixer.init()
 
+    volume = int(read_data('settings_values.txt')[0])
+
     mixer.music.load('sounds/background_music_1.mp3')
-    mixer.music.set_volume(0.1)
+    mixer.music.set_volume(volume / 100)
     mixer.music.play(-1)
 
     pygame.display.set_caption('Poker Combos')
