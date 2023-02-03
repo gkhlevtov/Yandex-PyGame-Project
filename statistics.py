@@ -5,11 +5,11 @@ from pygame import mixer
 
 import menu as menu
 from globals import Button
-from globals import fps, use_custom_cursor, \
+from globals import fps, \
     click_sound, button_sound, \
     display_width, display_height, \
     w_percent, h_percent
-from globals import load_image, make_plot, get_max_score_row, RunWindow
+from globals import load_image, make_plot, get_max_score_row, RunWindow, read_data
 
 
 def show_text(row, screen_size, screen):
@@ -78,13 +78,16 @@ def main():
     clock = pygame.time.Clock()
 
     running = True
+    use_custom_cursor = read_data('settings_values.txt')[1]
 
     while running:
         screen.blit(scaled_background, (0, 0))
         screen.blit(plot_img, (plot_x, plot_y))
 
-        if use_custom_cursor:
+        if use_custom_cursor == '1':
             pygame.mouse.set_visible(False)
+        else:
+            pygame.mouse.set_visible(True)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -120,7 +123,7 @@ def main():
         buttons.update()
         buttons.draw(screen)
 
-        if pygame.mouse.get_focused():
+        if pygame.mouse.get_focused() and use_custom_cursor == '1':
             cursor_img_rect.center = pygame.mouse.get_pos()
             screen.blit(cursor_img, cursor_img_rect)
 

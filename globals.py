@@ -162,6 +162,20 @@ def load_image(filename, color_key=None, gray=None):
     return image
 
 
+def read_data(datafile):
+    """Функция чтения настроек."""
+    with open(datafile, 'r') as fin:
+        values = fin.readline().strip().split(';')
+
+    return values
+
+
+def write_data(datafile, values):
+    """Функция записи настроек."""
+    with open(datafile, 'w') as fin:
+        print(*values, sep=';', end='', file=fin)
+
+
 def get_max_score_row():
     """Функция получения строки с лучшим счётом."""
     rows = []
@@ -217,7 +231,6 @@ h_percent = display_height // 100
 
 card_size = 225 * display_width // 1920, 315 * display_height // 1080
 
-use_custom_cursor = True
 game_log = False
 fps = 60
 

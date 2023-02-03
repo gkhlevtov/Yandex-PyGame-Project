@@ -9,11 +9,11 @@ from pygame import mixer
 import best_combination
 import menu as menu
 from globals import Button
-from globals import fps, use_custom_cursor, \
+from globals import fps, \
     click_sound, button_sound, \
     full_deck, display_width, display_height, card_size, \
     w_percent, h_percent, game_log
-from globals import load_image, RunWindow
+from globals import load_image, RunWindow, read_data
 
 
 class Card(pygame.sprite.Sprite):
@@ -334,7 +334,7 @@ def get_best_combination(game_set, player_set1, player_set2, log=False):
     return win_comb, best
 
 
-def write_data(filename, score, time, date):
+def write_data_to_table(filename, score, time, date):
     with open(filename, 'r', newline='', encoding="utf8") as csvfile:
         reader = csv.reader(csvfile, delimiter=';', quotechar='"')
         rows = []
@@ -398,6 +398,8 @@ def main():
     current_zone = 0
     running = True
 
+    use_custom_cursor = read_data('settings_values.txt')[1]
+
     focused = False
     on_pause = True
     wait = False
@@ -427,7 +429,7 @@ def main():
     show_score(current_score, screen_size=size, screen=screen)
 
     while running:
-        if use_custom_cursor:
+        if use_custom_cursor == '1':
             pygame.mouse.set_visible(False)
 
         for event in pygame.event.get():
@@ -542,7 +544,7 @@ def main():
         if draw_border:
             draw_zone_border(table_zone, sets_pos, screen_size=size, card_sizes=card_size, screen=screen)
 
-        if use_custom_cursor:
+        if use_custom_cursor == '1':
             if pygame.mouse.get_focused():
                 cursor_img_rect.center = pygame.mouse.get_pos()
                 screen.blit(cursor_img, cursor_img_rect)
@@ -555,7 +557,7 @@ def main():
 
     timing = 60 - seconds
 
-    write_data('data.csv', current_score, timing, game_date)
+    write_data_to_table('data.csv', current_score, timing, game_date)
 
     buttons = pygame.sprite.Group()
     button_sizes = (w_percent * 40, h_percent * 15)
@@ -572,8 +574,11 @@ def main():
     while running:
         screen.blit(scaled_background, (0, 0))
         draw_game_over_screen(current_score, screen_size=size, screen=screen)
-        if use_custom_cursor:
+
+        if use_custom_cursor == '1':
             pygame.mouse.set_visible(False)
+        else:
+            pygame.mouse.set_visible(True)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -607,7 +612,7 @@ def main():
         buttons.update()
         buttons.draw(screen)
 
-        if pygame.mouse.get_focused():
+        if pygame.mouse.get_focused() and use_custom_cursor == '1':
             cursor_img_rect.center = pygame.mouse.get_pos()
             screen.blit(cursor_img, cursor_img_rect)
 
