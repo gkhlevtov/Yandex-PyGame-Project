@@ -9,7 +9,83 @@ from globals import fps, \
     click_sound, button_sound, \
     display_width, display_height, \
     w_percent, h_percent
-from globals import load_image, RunWindow, read_data
+from globals import load_image, RunWindow, read_data, read_rules
+
+
+def show_rules(screen_size, screen, number=1):
+    """Функция вывода текста правил на экран."""
+
+    rules = read_rules('rules.txt')
+    size_percent = 225 // 100
+    card_sizes = (225 - size_percent * 30, 315 - size_percent * 30)
+
+    screen_width, screen_height = screen_size
+    w_percent, h_percent = screen_width // 100, screen_height // 100
+    font = pygame.font.Font('fonts/FiraSans-Bold.otf', screen_height // 100 * 5)
+
+    if number == 1:
+        text_x = 20 * w_percent
+        text_y = 2 * w_percent
+
+        for i in range(2):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+
+        text_x = 2 * w_percent
+        for i in range(2, 12):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+
+        text_y += 5 * h_percent
+        for i in ['01', '52', '28', '17', '09']:
+            image = pygame.transform.scale(load_image(f'card_{i}.png'), card_sizes)
+            screen.blit(image, (text_x, text_y))
+            text_x += 15 * w_percent
+    elif number == 2:
+        text_x = 20 * w_percent
+        text_y = 2 * w_percent
+
+        for i in range(13, 15):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+
+        text_x = 2 * w_percent
+        for i in range(15, 27):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+    elif number == 3:
+        text_x = 20 * w_percent
+        text_y = 2 * w_percent
+
+        for i in range(27, 29):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+
+        text_x = 2 * w_percent
+        for i in range(29, len(rules)):
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+            text_y += 5 * h_percent
+
+
+def go_to_page1():
+    """Функция выбора первой страницы правил."""
+    return 1
+
+
+def go_to_page2():
+    """Функция выбора второй страницы правил."""
+    return 2
+
+
+def go_to_page3():
+    """Функция выбора третьей страницы правил."""
+    return 3
 
 
 def main():
@@ -32,17 +108,37 @@ def main():
     background_image = load_image('background_big.jpg')
     scaled_background = pygame.transform.scale(background_image, (display_width, display_height))
 
+    current_page = 1
+
     buttons = pygame.sprite.Group()
     button_sizes = (w_percent * 15, h_percent * 10)
 
-    button_x = w_percent * 4
-    button_y = h_percent * 15
-    go_back_button = Button((button_x, button_y), button_sizes[0], button_sizes[1], (255, 173, 64), 'Назад',
+    go_back_button = Button((w_percent * 2, h_percent * 4), button_sizes[0], button_sizes[1], (255, 173, 64), 'Назад',
                             h_percent * 7,
                             (0, 0, 0))
 
     go_back_button.set_func(RunWindow(menu).run)
     buttons.add(go_back_button)
+
+    page_1_button = Button((w_percent * 95, h_percent * 5), 5 * w_percent, 5 * w_percent, (255, 173, 64), '1',
+                           h_percent * 7,
+                           (0, 0, 0))
+    page_1_button.set_func(go_to_page1)
+    buttons.add(page_1_button)
+
+    page_2_button = Button((w_percent * 95, h_percent * 20), 5 * w_percent, 5 * w_percent, (255, 173, 64), '2',
+                           h_percent * 7,
+                           (0, 0, 0))
+
+    page_2_button.set_func(go_to_page2)
+    buttons.add(page_2_button)
+
+    page_3_button = Button((w_percent * 95, h_percent * 35), 5 * w_percent, 5 * w_percent, (255, 173, 64), '3',
+                           h_percent * 7,
+                           (0, 0, 0))
+
+    page_3_button.set_func(go_to_page3)
+    buttons.add(page_3_button)
 
     clock = pygame.time.Clock()
 
@@ -79,6 +175,9 @@ def main():
                         button_sound.play()
                         if button.func is None:
                             print('Nothing happened')
+                        if button.func in [go_to_page1, go_to_page2, go_to_page3]:
+                            print('ok')
+                            current_page = button.action()
                         else:
                             button.action()
 
@@ -86,6 +185,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
+        show_rules(screen_size=size, screen=screen, number=current_page)
         buttons.update()
         buttons.draw(screen)
 

@@ -82,7 +82,7 @@ class Button(pygame.sprite.Sprite):
 
     def action(self, *x):
         try:
-            self.func(*x)
+            return self.func(*x)
         except Exception as error:
             print("No function now", error)
 
@@ -168,6 +168,14 @@ def read_data(datafile):
         values = fin.readline().strip().split(';')
 
     return values
+
+
+def read_rules(datafile):
+    """Функция чтения правил."""
+    with open(datafile, 'r', encoding='utf-8') as fin:
+        rules = [el.strip() for el in fin.readlines()]
+
+    return rules
 
 
 def write_data(datafile, values):
