@@ -1,8 +1,6 @@
 import sys
 
 import pygame
-import win32api
-import win32net
 from pygame import mixer
 
 import main as game
@@ -18,8 +16,6 @@ from globals import load_image, RunWindow, read_data
 
 
 def close_game():
-    user_properties = win32net.NetUserGetInfo(None, win32api.GetUserName(), 20)
-    print(f'До свидания, {user_properties.get("full_name")}!')
     pygame.quit()
     sys.exit()
 

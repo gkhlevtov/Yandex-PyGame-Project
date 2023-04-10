@@ -8,69 +8,111 @@ from globals import Button
 from globals import fps, \
     click_sound, button_sound, \
     display_width, display_height, \
-    w_percent, h_percent
+    w_percent, h_percent, card_size
 from globals import load_image, RunWindow, read_data, read_rules
 
 
-def show_rules(screen_size, screen, number=1):
+def show_rules(screen_size, screen, number=1, card_sizes=(225, 315)):
     """Функция вывода текста правил на экран."""
 
     rules = read_rules('rules.txt')
-    size_percent = 225 // 100
-    card_sizes = (225 - size_percent * 30, 315 - size_percent * 30)
+    size_percent = card_sizes[0] // 100
+    card_sizes = (card_sizes[0] - size_percent * 30, card_sizes[1] - size_percent * 30)
 
     screen_width, screen_height = screen_size
     w_percent, h_percent = screen_width // 100, screen_height // 100
     font = pygame.font.Font('fonts/FiraSans-Bold.otf', screen_height // 100 * 5)
 
+    text_x = 20 * w_percent
+
     if number == 1:
-        text_x = 20 * w_percent
-        text_y = 2 * w_percent
+        text_y = -2 * h_percent
 
         for i in range(2):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
-            text_y += 5 * h_percent
+
+        text_y += 3 * h_percent
 
         text_x = 2 * w_percent
-        for i in range(2, 12):
+        for i in range(2, 7):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
-            text_y += 5 * h_percent
 
-        text_y += 5 * h_percent
+        text_y += 3 * h_percent
+
+        for i in range(7, 10):
+            text_y += 5 * h_percent
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+
+        text_y += 10 * h_percent
         for i in ['01', '52', '28', '17', '09']:
             image = pygame.transform.scale(load_image(f'card_{i}.png'), card_sizes)
             screen.blit(image, (text_x, text_y))
             text_x += 15 * w_percent
+
     elif number == 2:
-        text_x = 20 * w_percent
-        text_y = 2 * w_percent
+        text_y = -2 * h_percent
 
-        for i in range(13, 15):
+        for i in range(10, 12):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
-            text_y += 5 * h_percent
 
+        text_y += 3 * h_percent
         text_x = 2 * w_percent
-        for i in range(15, 27):
+
+        for i in range(12, 22):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
+
+        text_y += 3 * h_percent
+
+        for i in range(22, 24):
             text_y += 5 * h_percent
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+
+        text_y += 3 * h_percent
+
+        for i in range(24, 27):
+            text_y += 5 * h_percent
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+
     elif number == 3:
-        text_x = 20 * w_percent
-        text_y = 2 * w_percent
+        text_y = -2 * h_percent
 
         for i in range(27, 29):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
-            text_y += 5 * h_percent
 
         text_x = 2 * w_percent
-        for i in range(29, len(rules)):
+        text_y += 3 * h_percent
+
+        for i in range(29, 33):
+            text_y += 5 * h_percent
             text = font.render(rules[i], True, (250, 150, 0))
             screen.blit(text, (text_x, text_y))
+
+        text_y += 3 * h_percent
+
+        for i in range(33, 36):
             text_y += 5 * h_percent
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
+
+        text_y += 3 * h_percent
+
+        for i in range(36, 38):
+            text_y += 5 * h_percent
+            text = font.render(rules[i], True, (250, 150, 0))
+            screen.blit(text, (text_x, text_y))
 
 
 def go_to_page1():
@@ -176,7 +218,6 @@ def main():
                         if button.func is None:
                             print('Nothing happened')
                         if button.func in [go_to_page1, go_to_page2, go_to_page3]:
-                            print('ok')
                             current_page = button.action()
                         else:
                             button.action()
@@ -185,7 +226,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-        show_rules(screen_size=size, screen=screen, number=current_page)
+        show_rules(screen_size=size, screen=screen, number=current_page, card_sizes=card_size)
         buttons.update()
         buttons.draw(screen)
 
